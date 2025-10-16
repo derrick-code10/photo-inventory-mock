@@ -29,7 +29,7 @@ export function AuthScreen({ onLogin }: AuthScreenProps) {
           </div>
           <div className="text-center">
             <CardTitle>Photography Inventory</CardTitle>
-            <CardDescription>Professor Portal - Sign in to manage your collection</CardDescription>
+            <CardDescription>Sign in to manage Photography Resources</CardDescription>
           </div>
         </CardHeader>
         <CardContent>

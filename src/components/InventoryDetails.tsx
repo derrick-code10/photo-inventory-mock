@@ -1,4 +1,5 @@
-import { X, Camera, MapPin, Calendar, Settings, Tag, FileText, Edit, Trash2 } from 'lucide-react';
+import React from 'react';
+import { X, Camera, MapPin, Calendar, Settings, Tag, FileText, Edit, Trash2, Package, Activity } from 'lucide-react';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { Separator } from './ui/separator';
@@ -37,12 +38,11 @@ export function InventoryDetails({ item, onClose }: InventoryDetailsProps) {
           {/* Title and Status */}
           <div>
             <div className="flex items-start justify-between gap-4 mb-2">
-              <h3>{item.title}</h3>
+              <h3>{item.itemName}</h3>
               <Badge variant="outline" className={statusColors[item.status]}>
                 {item.status}
               </Badge>
             </div>
-            <p className="text-gray-600">{item.category}</p>
           </div>
 
           <Separator />
@@ -52,56 +52,64 @@ export function InventoryDetails({ item, onClose }: InventoryDetailsProps) {
             <div className="space-y-4">
               <div>
                 <div className="flex items-center gap-2 text-sm text-gray-600 mb-1">
-                  <Calendar className="w-4 h-4" />
-                  <span>Date Captured</span>
+                  <Package className="w-4 h-4" />
+                  <span>Quantity</span>
                 </div>
-                <p>{item.date}</p>
+                <p>{item.quantity}</p>
+              </div>
+
+              <div>
+                <div className="flex items-center gap-2 text-sm text-gray-600 mb-1">
+                  <Activity className="w-4 h-4" />
+                  <span>Status</span>
+                </div>
+                <Badge variant="outline" className={statusColors[item.status]}>
+                  {item.status}
+                </Badge>
               </div>
 
               <div>
                 <div className="flex items-center gap-2 text-sm text-gray-600 mb-1">
                   <MapPin className="w-4 h-4" />
-                  <span>Location</span>
+                  <span>Storage Location</span>
                 </div>
-                <p>{item.location}</p>
+                <p>{item.storageLocation}</p>
               </div>
             </div>
 
             <div className="space-y-4">
               <div>
                 <div className="flex items-center gap-2 text-sm text-gray-600 mb-1">
-                  <Settings className="w-4 h-4" />
-                  <span>Equipment Used</span>
+                  <Calendar className="w-4 h-4" />
+                  <span>Last Updated</span>
                 </div>
-                <p>{item.equipment}</p>
+                <p>{item.lastUpdated}</p>
               </div>
 
               <div>
                 <div className="flex items-center gap-2 text-sm text-gray-600 mb-1">
-                  <Tag className="w-4 h-4" />
-                  <span>Tags</span>
+                  <Settings className="w-4 h-4" />
+                  <span>Updated By</span>
                 </div>
-                <div className="flex flex-wrap gap-2">
-                  {item.tags.map((tag) => (
-                    <Badge key={tag} variant="secondary">
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
+                <p>{item.updatedBy}</p>
               </div>
             </div>
           </div>
 
           <Separator />
 
-          {/* Notes */}
+          {/* Tags */}
           <div>
             <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
-              <FileText className="w-4 h-4" />
-              <span>Notes</span>
+              <Tag className="w-4 h-4" />
+              <span>Tags</span>
             </div>
-            <div className="bg-gray-50 rounded-lg p-4 border">
-              <p className="text-gray-700">{item.notes}</p>
+            <div className="flex flex-wrap gap-2">
+              {item.tags.map((tag) => (
+                <Badge key={tag} variant="secondary">
+                  {tag}
+                </Badge>
+              ))}
             </div>
           </div>
 
@@ -109,23 +117,31 @@ export function InventoryDetails({ item, onClose }: InventoryDetailsProps) {
 
           {/* Metadata */}
           <div className="bg-gray-50 rounded-lg p-4 border">
-            <h4 className="text-sm mb-3">Additional Metadata</h4>
+            <h4 className="text-sm mb-3">Item Information</h4>
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
                 <span className="text-gray-600">Item ID:</span>
                 <p className="mt-1">{item.id}</p>
               </div>
               <div>
-                <span className="text-gray-600">Format:</span>
-                <p className="mt-1">RAW + JPEG</p>
+                <span className="text-gray-600">Quantity:</span>
+                <p className="mt-1">{item.quantity}</p>
               </div>
               <div>
-                <span className="text-gray-600">File Size:</span>
-                <p className="mt-1">45.2 MB</p>
+                <span className="text-gray-600">Status:</span>
+                <p className="mt-1 capitalize">{item.status}</p>
               </div>
               <div>
-                <span className="text-gray-600">Resolution:</span>
-                <p className="mt-1">6000 × 4000 px</p>
+                <span className="text-gray-600">Storage Location:</span>
+                <p className="mt-1">{item.storageLocation}</p>
+              </div>
+              <div>
+                <span className="text-gray-600">Last Updated:</span>
+                <p className="mt-1">{item.lastUpdated}</p>
+              </div>
+              <div>
+                <span className="text-gray-600">Updated By:</span>
+                <p className="mt-1">{item.updatedBy}</p>
               </div>
             </div>
           </div>

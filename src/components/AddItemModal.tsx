@@ -1,40 +1,25 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { X, Upload, Plus } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
-import { Textarea } from './ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Badge } from './ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import type { InventoryItem } from './Dashboard';
 
 interface AddItemModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAdd: (item: any) => void;
+  onAdd: (item: InventoryItem) => void;
 }
-
-const categories = [
-  'Landscape',
-  'Portrait',
-  'Architecture',
-  'Macro',
-  'Street',
-  'Wildlife',
-  'Abstract',
-  'Documentary',
-  'Still Life',
-  'Other'
-];
 
 export function AddItemModal({ isOpen, onClose, onAdd }: AddItemModalProps) {
   const [formData, setFormData] = useState({
-    title: '',
-    category: '',
-    date: '',
-    location: '',
-    equipment: '',
+    itemName: '',
+    quantity: 1,
     status: 'available' as 'available' | 'in-use' | 'archived',
-    notes: ''
+    storageLocation: '',
+    updatedBy: ''
   });
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState('');
@@ -42,23 +27,26 @@ export function AddItemModal({ isOpen, onClose, onAdd }: AddItemModalProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    const newItem = {
+    const newItem: InventoryItem = {
       id: Date.now().toString(),
-      ...formData,
-      tags
+      itemName: formData.itemName,
+      quantity: formData.quantity,
+      tags,
+      status: formData.status,
+      storageLocation: formData.storageLocation,
+      lastUpdated: new Date().toISOString().split('T')[0], // Today's date in YYYY-MM-DD format
+      updatedBy: formData.updatedBy
     };
 
     onAdd(newItem);
     
     // Reset form
     setFormData({
-      title: '',
-      category: '',
-      date: '',
-      location: '',
-      equipment: '',
+      itemName: '',
+      quantity: 1,
       status: 'available',
-      notes: ''
+      storageLocation: '',
+      updatedBy: ''
     });
     setTags([]);
     setTagInput('');
@@ -108,40 +96,33 @@ export function AddItemModal({ isOpen, onClose, onAdd }: AddItemModalProps) {
             </div>
           </div>
 
-          {/* Title */}
+          {/* Item Name */}
           <div>
-            <Label htmlFor="title">Title *</Label>
+            <Label htmlFor="itemName">Item Name *</Label>
             <Input
-              id="title"
+              id="itemName"
               type="text"
               placeholder="e.g., Landscape Series - Mountain Vista"
-              value={formData.title}
-              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              value={formData.itemName}
+              onChange={(e) => setFormData({ ...formData, itemName: e.target.value })}
               required
               className="mt-2"
             />
           </div>
 
-          {/* Category and Status Row */}
+          {/* Quantity and Status Row */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="category">Category *</Label>
-              <Select
-                value={formData.category}
-                onValueChange={(value) => setFormData({ ...formData, category: value })}
+              <Label htmlFor="quantity">Quantity *</Label>
+              <Input
+                id="quantity"
+                type="number"
+                min="1"
+                value={formData.quantity}
+                onChange={(e) => setFormData({ ...formData, quantity: parseInt(e.target.value) || 1 })}
                 required
-              >
-                <SelectTrigger className="mt-2">
-                  <SelectValue placeholder="Select category" />
-                </SelectTrigger>
-                <SelectContent>
-                  {categories.map((category) => (
-                    <SelectItem key={category} value={category}>
-                      {category}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                className="mt-2"
+              />
             </div>
 
             <div>
@@ -163,46 +144,33 @@ export function AddItemModal({ isOpen, onClose, onAdd }: AddItemModalProps) {
             </div>
           </div>
 
-          {/* Date and Location Row */}
+          {/* Storage Location and Updated By Row */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="date">Date Captured *</Label>
+              <Label htmlFor="storageLocation">Storage Location *</Label>
               <Input
-                id="date"
-                type="date"
-                value={formData.date}
-                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                id="storageLocation"
+                type="text"
+                placeholder="e.g., Studio A, Cabinet 3, Shelf B"
+                value={formData.storageLocation}
+                onChange={(e) => setFormData({ ...formData, storageLocation: e.target.value })}
                 required
                 className="mt-2"
               />
             </div>
 
             <div>
-              <Label htmlFor="location">Location *</Label>
+              <Label htmlFor="updatedBy">Updated By *</Label>
               <Input
-                id="location"
+                id="updatedBy"
                 type="text"
-                placeholder="e.g., Rocky Mountains, CO"
-                value={formData.location}
-                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                placeholder="e.g., John Doe, Prof. Smith"
+                value={formData.updatedBy}
+                onChange={(e) => setFormData({ ...formData, updatedBy: e.target.value })}
                 required
                 className="mt-2"
               />
             </div>
-          </div>
-
-          {/* Equipment */}
-          <div>
-            <Label htmlFor="equipment">Equipment Used *</Label>
-            <Input
-              id="equipment"
-              type="text"
-              placeholder="e.g., Canon EOS R5, 24-70mm f/2.8"
-              value={formData.equipment}
-              onChange={(e) => setFormData({ ...formData, equipment: e.target.value })}
-              required
-              className="mt-2"
-            />
           </div>
 
           {/* Tags */}
@@ -238,62 +206,6 @@ export function AddItemModal({ isOpen, onClose, onAdd }: AddItemModalProps) {
                   ))}
                 </div>
               )}
-            </div>
-          </div>
-
-          {/* Notes */}
-          <div>
-            <Label htmlFor="notes">Notes</Label>
-            <Textarea
-              id="notes"
-              placeholder="Add any additional notes about this photograph..."
-              value={formData.notes}
-              onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-              rows={4}
-              className="mt-2"
-            />
-          </div>
-
-          {/* Additional Metadata */}
-          <div className="bg-gray-50 rounded-lg p-4 border">
-            <h4 className="text-sm mb-3">Additional Metadata (Optional)</h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="fileSize" className="text-sm">File Size</Label>
-                <Input
-                  id="fileSize"
-                  type="text"
-                  placeholder="e.g., 45.2 MB"
-                  className="mt-1"
-                />
-              </div>
-              <div>
-                <Label htmlFor="resolution" className="text-sm">Resolution</Label>
-                <Input
-                  id="resolution"
-                  type="text"
-                  placeholder="e.g., 6000 × 4000 px"
-                  className="mt-1"
-                />
-              </div>
-              <div>
-                <Label htmlFor="format" className="text-sm">File Format</Label>
-                <Input
-                  id="format"
-                  type="text"
-                  placeholder="e.g., RAW + JPEG"
-                  className="mt-1"
-                />
-              </div>
-              <div>
-                <Label htmlFor="iso" className="text-sm">ISO</Label>
-                <Input
-                  id="iso"
-                  type="text"
-                  placeholder="e.g., 100"
-                  className="mt-1"
-                />
-              </div>
             </div>
           </div>
 

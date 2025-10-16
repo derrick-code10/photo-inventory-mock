@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { InventoryGrid } from './InventoryGrid';
@@ -24,83 +24,56 @@ interface DashboardProps {
 
 export interface InventoryItem {
   id: string;
-  title: string;
-  category: string;
-  date: string;
-  location: string;
-  equipment: string;
-  status: 'available' | 'in-use' | 'archived';
+  itemName: string;
+  quantity: number;
   tags: string[];
-  notes: string;
+  status: 'available' | 'in-use' | 'archived';
+  storageLocation: string;
+  lastUpdated: string;
+  updatedBy: string;
 }
 
 const initialInventory: InventoryItem[] = [
   {
     id: '1',
-    title: 'Landscape Series - Mountain Vista',
-    category: 'Landscape',
-    date: '2024-09-15',
-    location: 'Rocky Mountains, CO',
-    equipment: 'Canon EOS R5, 24-70mm f/2.8',
+    itemName: 'Ink-1A2B',
+    quantity: 3,
+    tags: ['ink'],
     status: 'available',
-    tags: ['mountains', 'nature', 'golden-hour'],
-    notes: 'Shot during sunset, excellent lighting conditions'
+    storageLocation: 'Ink shelf',
+    lastUpdated: '2000-01-01',
+    updatedBy: 'TA 2'
   },
   {
     id: '2',
-    title: 'Portrait Study - Natural Light',
-    category: 'Portrait',
-    date: '2024-10-01',
-    location: 'Studio A',
-    equipment: 'Sony A7III, 85mm f/1.4',
-    status: 'in-use',
-    tags: ['portrait', 'natural-light', 'studio'],
-    notes: 'Using window light, reflector on left'
+    itemName: 'WD40',
+    quantity: 234,
+    tags: ['chemical'],
+    status: 'archived',
+    storageLocation: 'Closet',
+    lastUpdated: '2032-06-12',
+    updatedBy: 'MrBeast'
   },
   {
     id: '3',
-    title: 'Urban Architecture - Downtown',
-    category: 'Architecture',
-    date: '2024-08-22',
-    location: 'Chicago, IL',
-    equipment: 'Nikon Z7, 14-24mm f/2.8',
-    status: 'available',
-    tags: ['architecture', 'urban', 'black-white'],
-    notes: 'Wide angle perspective study'
+    itemName: 'Fixer-55',
+    quantity: 2,
+    tags: ['chemical'],
+    status: 'archived',
+    storageLocation: 'Dark Room',
+    lastUpdated: '2004-12-23',
+    updatedBy: 'Jesse Pinkman'
   },
   {
     id: '4',
-    title: 'Macro Photography - Botanical',
-    category: 'Macro',
-    date: '2024-09-30',
-    location: 'Campus Greenhouse',
-    equipment: 'Canon EOS R5, 100mm f/2.8 Macro',
-    status: 'available',
-    tags: ['macro', 'botanical', 'close-up'],
-    notes: 'Focus stacking technique used'
+    itemName: 'Canon DSLR',
+    quantity: 1,
+    tags: ['Camera'],
+    status: 'in-use',
+    storageLocation: 'Myles House',
+    lastUpdated: '2004-12-23',
+    updatedBy: 'Gru (admin)'
   },
-  {
-    id: '5',
-    title: 'Street Photography - Market Day',
-    category: 'Street',
-    date: '2024-10-10',
-    location: 'Local Farmers Market',
-    equipment: 'Fujifilm X-T4, 35mm f/2',
-    status: 'archived',
-    tags: ['street', 'documentary', 'people'],
-    notes: 'Candid shots, natural moments'
-  },
-  {
-    id: '6',
-    title: 'Wildlife Series - Bird Migration',
-    category: 'Wildlife',
-    date: '2024-09-05',
-    location: 'State Park',
-    equipment: 'Canon EOS R6, 100-400mm f/5.6',
-    status: 'available',
-    tags: ['wildlife', 'birds', 'nature'],
-    notes: 'Early morning shoot, fast shutter speed'
-  }
 ];
 
 export function Dashboard({ onLogout }: DashboardProps) {
@@ -115,8 +88,7 @@ export function Dashboard({ onLogout }: DashboardProps) {
   };
 
   const filteredInventory = inventory.filter(item =>
-    item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    item.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    item.itemName.toLowerCase().includes(searchQuery.toLowerCase()) ||
     item.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
@@ -136,14 +108,6 @@ export function Dashboard({ onLogout }: DashboardProps) {
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <Button variant="outline" size="sm">
-                <Upload className="w-4 h-4 mr-2" />
-                Import
-              </Button>
-              <Button variant="outline" size="sm">
-                <Download className="w-4 h-4 mr-2" />
-                Export
-              </Button>
               <Button variant="outline" size="sm" onClick={onLogout}>
                 <LogOut className="w-4 h-4 mr-2" />
                 Logout
@@ -162,21 +126,21 @@ export function Dashboard({ onLogout }: DashboardProps) {
             <div className="text-2xl mt-2">{inventory.length}</div>
           </div>
           <div className="bg-white p-6 rounded-lg border">
-            <div className="text-sm text-gray-600">Available</div>
+            <div className="text-sm text-gray-600">Expired</div>
             <div className="text-2xl mt-2">
-              {inventory.filter(i => i.status === 'available').length}
+              {new Set(inventory.flatMap(i => i.tags)).size}
             </div>
           </div>
           <div className="bg-white p-6 rounded-lg border">
             <div className="text-sm text-gray-600">In Use</div>
             <div className="text-2xl mt-2">
-              {inventory.filter(i => i.status === 'in-use').length}
+              {new Set(inventory.map(i => i.storageLocation)).size}
             </div>
           </div>
           <div className="bg-white p-6 rounded-lg border">
-            <div className="text-sm text-gray-600">Archived</div>
+            <div className="text-sm text-gray-600">Out Of Stock</div>
             <div className="text-2xl mt-2">
-              {inventory.filter(i => i.status === 'archived').length}
+              {inventory.reduce((sum, i) => sum + i.quantity, 0)}
             </div>
           </div>
         </div>
@@ -231,41 +195,11 @@ export function Dashboard({ onLogout }: DashboardProps) {
         <Tabs defaultValue="all" className="space-y-6">
           <TabsList>
             <TabsTrigger value="all">All Items ({inventory.length})</TabsTrigger>
-            <TabsTrigger value="available">
-              Available ({inventory.filter(i => i.status === 'available').length})
-            </TabsTrigger>
-            <TabsTrigger value="in-use">
-              In Use ({inventory.filter(i => i.status === 'in-use').length})
-            </TabsTrigger>
-            <TabsTrigger value="archived">
-              Archived ({inventory.filter(i => i.status === 'archived').length})
-            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="all">
             <InventoryGrid
               items={filteredInventory}
-              viewMode={viewMode}
-              onSelectItem={setSelectedItem}
-            />
-          </TabsContent>
-          <TabsContent value="available">
-            <InventoryGrid
-              items={filteredInventory.filter(i => i.status === 'available')}
-              viewMode={viewMode}
-              onSelectItem={setSelectedItem}
-            />
-          </TabsContent>
-          <TabsContent value="in-use">
-            <InventoryGrid
-              items={filteredInventory.filter(i => i.status === 'in-use')}
-              viewMode={viewMode}
-              onSelectItem={setSelectedItem}
-            />
-          </TabsContent>
-          <TabsContent value="archived">
-            <InventoryGrid
-              items={filteredInventory.filter(i => i.status === 'archived')}
               viewMode={viewMode}
               onSelectItem={setSelectedItem}
             />
