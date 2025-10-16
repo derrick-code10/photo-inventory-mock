@@ -56,5 +56,6 @@
     server: {
       port: 8000,
       open: true,
+      allowedHosts: ['tahours.space'],
     },
   });

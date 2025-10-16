@@ -104,7 +104,7 @@ export function Dashboard({ onLogout }: DashboardProps) {
               </div>
               <div>
                 <h1>Photography Inventory</h1>
-                <p className="text-sm text-gray-600">Professor Dashboard</p>
+                <p className="text-sm text-gray-600">Dashboard</p>
               </div>
             </div>
             <div className="flex items-center gap-3">

@@ -1,30 +1,18 @@
-# Stage 1: Build the React + Vite app
-FROM node:20-alpine AS builder
+FROM node:20-alpine
 
+# Set working directory
 WORKDIR /app
 
-# Copy package files and install dependencies
+# Copy dependency files first for caching
 COPY package.json package-lock.json ./
 RUN npm ci
 
-# Copy source code and build
+# Copy the rest of your source code
 COPY . .
-RUN npm run build
 
-# Stage 2: Serve the app
-FROM node:20-alpine
-
-WORKDIR /app
-
-# Install serve package globally
-RUN npm install -g serve
-
-# Copy built files from builder
-COPY --from=builder /app/dist ./dist
-
-# Expose port 8000
+# Expose the Vite dev server port
 EXPOSE 8000
 
-# Start the app using serve
-CMD ["serve", "-s", "dist", "-l", "8000"]
+# Run the Vite dev server
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0", "--port", "8000", "--open", "false"]
 
